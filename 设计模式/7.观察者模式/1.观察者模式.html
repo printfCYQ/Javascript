@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      var msgCenter = (function () {
+        var _msg = {}; //存储消息
+
+        /*
+            var _msg = {
+                'carInfo':[person1.alreadyRegister.carInfo,person2.alreadyRegister.carInfo,person3.alreadyRegister.carInfo]
+                'newsInfo':[person1.alreadyRegister.newsInfo,person3.alreadyRegister.newsInfo]
+            }
+        */
+
+        return {
+          //用于订阅一个消息
+          register: function (type, fn) {
+            if (_msg[type]) {
+              _msg[type].push(fn);
+            } else {
+              _msg[type] = [fn];
+            }
+          },
+
+          // 用于发布消息
+          fire: function (type, args) {
+            if (!_msg[type]) {
+              return;
+            }
+            var event = {
+              type: type,
+              args: args || {},
+            };
+            // console.log(event)
+            for (var i = 0; i < _msg[type].length; i++) {
+              // console.log(_msg[type][i]);
+              _msg[type][i](event);
+            }
+          },
+
+          //用于取消订阅
+          cancel: function (type, fn) {
+            if (!_msg[type]) {
+              return;
+            }
+            for (var i = 0; i < _msg[type].length; i++) {
+              if (_msg[type][i] === fn) {
+                _msg[type].splice(i, 1);
+                break;
+              }
+            }
+          },
+        };
+      })();
+
+      function Person() {
+        this.alreadyRegister = {};
+      }
+
+      Person.prototype.register = function (type, fn) {
+        if (this.alreadyRegister[type]) {
+          console.log("已订阅过了");
+        } else {
+          msgCenter.register(type, fn);
+          this.alreadyRegister[type] = fn;
+        }
+      };
+
+      Person.prototype.cancel = function (type, fn) {
+        msgCenter.cancel(type, this.alreadyRegister[type]);
+        delete this.alreadyRegister[type];
+      };
+
+      var person1 = new Person();
+      var person2 = new Person();
+      var person3 = new Person();
+
+      person1.register("carInfo", function (e) {
+        console.log("person1得到了" + e.type + "得消息，是：" + e.args.info);
+      });
+
+      person1.register("newsInfo", function (e) {
+        console.log("person1得到了" + e.type + "得消息，是：" + e.args.info);
+      });
+
+      person2.register("carInfo", function (e) {
+        console.log("person2得到了" + e.type + "得消息，是：" + e.args.info);
+      });
+
+      person3.register("carInfo", function (e) {
+        console.log("person3得到了" + e.type + "得消息，是：" + e.args.info);
+      });
+
+      person3.register("newsInfo", function (e) {
+        console.log("person3得到了" + e.type + "得消息，是：" + e.args.info);
+      });
+
+      msgCenter.fire("carInfo", { info: "新车上市" });
+      msgCenter.fire("newsInfo", { info: "日本地震" });
+
+      //   测试重复订阅
+      //   person1.register("carInfo", function (e) {
+      //     console.log("person1得到了" + e.type + "得消息，是：" + e.args.info);
+      //   });
+
+      person1.cancel("carInfo");
+      msgCenter.fire("carInfo", { info: "回收二手车" });
+    </script>
+  </head>
+  <body></body>
+</html>

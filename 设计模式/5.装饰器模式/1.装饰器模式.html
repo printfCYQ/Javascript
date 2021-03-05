@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      // 一般写法
+
+      function Car() {
+        this.price = 10;
+      }
+
+      Car.prototype = {
+        addHeatSeat: function () {
+          this.hasHeatSeat = true;
+          this.price += 2;
+        },
+        addAutoMirror: function () {
+          this.hasAutoMirror = true;
+          this.price += 0.8;
+        },
+      };
+
+      var car1 = new Car();
+      console.log(car1.price);
+      car1.addAutoMirror();
+      car1.addHeatSeat();
+      console.log(car1.price);
+
+      //   装饰器模式写法
+
+      function Car2() {
+        this.price = 10;
+      }
+
+      function carWithHeathead(carClass) {
+        carClass.hasHeatSeat = true;
+        carClass.price += 2;
+      }
+      function carWithAutoMirror(carClass) {
+        carClass.hasAutoMirror = true;
+        carClass.price += 0.8;
+      }
+
+      var car2 = new Car2();
+      console.log(car2.price);
+      carWithHeathead(car2);
+      carWithAutoMirror(car2);
+      console.log(car2.price);
+    </script>
+  </head>
+  <body></body>
+</html>

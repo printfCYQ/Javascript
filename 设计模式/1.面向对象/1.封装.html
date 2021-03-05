@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      // 正常开发————————————————————————————————————————————————————————————
+
+      //   var catA = {
+      //     name: "catA",
+      //     eat: function () {
+      //       console.log("catA eat somethng");
+      //     },
+      //   };
+
+      //   var catB = {
+      //     name: "catB",
+      //     eat: function () {
+      //       console.log("catB eat somethng");
+      //     },
+      //   };
+
+      //   var catC = {
+      //     name: "catC",
+      //     eat: function () {
+      //       console.log("catC eat somethng");
+      //     },
+      //   };
+
+      //封装————————————————————————————————————————————————————————————————
+      //工厂模式---封装------------------------------------------------------
+
+      //   function createCat(name) {
+      //     var obj = {};
+      //     obj.name = name;
+      //     obj.eat = function () {
+      //       console.log(name + "eat something");
+      //     };
+      //     return obj;
+      //   }
+
+      //   var catA = createCat("catA");
+      //   var catB = createCat("catB");
+      //   var catC = createCat("catC");
+
+      //面向对象---封装-----------------------------------------------------
+
+      //   构造函数
+      function CreateCat(name) {
+        this.name = name;
+        this.eat = function () {
+          console.log(this.name + "eat something");
+        };
+      }
+
+      //   new 实例
+      var catA = new CreateCat("catA");
+      var catB = new CreateCat("catB");
+      var catC = new CreateCat("catC");
+    </script>
+  </head>
+  <body></body>
+</html>

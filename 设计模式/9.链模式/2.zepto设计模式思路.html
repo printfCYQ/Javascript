@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./node_modules/zepto/dist/zepto.js"></script>
+    <script>
+      (function (global, factory) {
+        if (typeof define === "function" && define.amd) {
+          // xxx
+        } else {
+          factory(global);
+        }
+      })(this, function (window) {
+        var Zepto = (function () {
+          var emptyArray = [];
+          var zepto = {};
+
+          var $ = function (selector, context) {
+            return zepto.init(selector, context);
+          };
+
+          zepto.init = function (selector, context) {
+            // var dom = zepto.qsa(document, selector);
+            var dom = [document.getElementById(selector.slice(1))];
+            return zepto.Z(dom, selector);
+          };
+
+          zepto.Z = function (dom, selector) {
+            return new Z(dom, selector);
+
+            /*
+              $ = zepto.init = zepto.Z = new Z ==> {
+                    0:domA,
+                    length:1,
+                    selector:'#a',
+                    __proto__:$.fn
+                }
+            */
+          };
+
+          function Z(dom, selector) {
+            var i;
+            var len = dom ? dom.length : 0;
+
+            for (i = 0; i < len; i++) {
+              this[i] = dom[i];
+              this.length = len;
+              this.selector = selector || "";
+            }
+          }
+
+          $.fn = {
+            constructor: zepto.Z,
+            length: 0,
+            forEach: emptyArray.forEach,
+            reduce: emptyArray.reduce,
+            push: emptyArray.push,
+            sort: emptyArray.sort,
+            splice: emptyArray.splice,
+            indexOf: emptyArray.indexOf,
+          };
+
+          zepto.Z.prototype = Z.prototype = $.fn;
+          $.zepto = zepto;
+
+          return $;
+        })();
+        window.Zepto2 = Zepto;
+      });
+
+      window.onload = function () {
+        console.log($ === Zepto2);
+        console.log($("#a"));
+        console.log(Zepto2("#a"));
+      };
+    </script>
+  </head>
+  <body>
+    <div id="a">123</div>
+  </body>
+</html>

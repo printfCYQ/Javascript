@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      function CreateCat(name) {
+        this.name = name;
+      }
+      var catA = new CreateCat("xiaoA");
+
+      console.log(catA.name); // xiaoA
+
+      /*
+            new 过程
+            1. 创建一个空对象
+            2. 将构造函数的prototype属性赋值给新对象的__proto__属性
+            3. 将构造函数的this指向新对象
+            4. 执行构造函数的代码
+            5. 将对象返回
+        */
+
+      var catB = (function () {
+        var obj = {}; //1.
+        obj.__proto__ = CreateCat.prototype; //2.
+        CreateCat.call(obj, "xiaoB"); //3,4
+        return obj; //5
+      })();
+
+      console.log(catB.name); //xiaoB
+    </script>
+  </head>
+  <body></body>
+</html>

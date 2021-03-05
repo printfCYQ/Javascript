@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      //call apply 动态改变this指向
+
+      function aaa() {
+        console.log(this);
+      }
+
+      var objA = {
+        a: aaa,
+      };
+
+      aaa(); //window
+      objA.a(); //objA
+
+      aaa.call(objA); //objA
+      objA.a.apply(window); //window
+
+      //   ________________________________________________
+
+      function bbb(name, age) {
+        this.name = name;
+        this.age = age;
+      }
+
+      var objB = {
+        b: bbb,
+      };
+
+      bbb.call(objB, "CYQ", 23);
+      console.log(objB.name, objB.age); //CYQ 23
+
+      objB.b.apply(window, ["QYC", "32"]);
+      console.log(window.name, window.age); //QYC 32
+    </script>
+  </head>
+  <body></body>
+</html>

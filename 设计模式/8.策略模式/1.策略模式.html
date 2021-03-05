@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      var formStrategy = (function () {
+        var strategy = {
+          notEmpty: function (value) {
+            return value.length ? "" : "请填写内容";
+          },
+          isNumber: function (value) {
+            var reg = /^[0-9]+(\.[0-9]+)?$/;
+            return reg.test(value) ? "" : "请填写数字";
+          },
+          isPhone: function (value) {
+            var reg = /^\d{3}-\d{8}$|^\d{4}-\d{7}$/;
+            return reg.test(value) ? "" : "请填写固话";
+          },
+        };
+        return {
+          validate: function (type, value) {
+            value = value.replace(/^\s+|\s+$/, "");
+            return strategy[type]
+              ? strategy[type](value)
+              : "没有这个方法，请添加";
+          },
+          addStrategy: function (type, fn) {
+            if (strategy[type]) {
+              return "方法已存在";
+            } else {
+              strategy[type] = fn;
+            }
+          },
+        };
+      })();
+
+      window.onload = function () {
+        formStrategy.addStrategy("isEmail", function (value) {
+          var reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+          return reg.test(value) ? "" : "请填写邮箱";
+        });
+
+        var oInput = document.querySelector("input");
+        oInput.onchange = function () {
+          var result;
+          result =
+            formStrategy.validate("notEmpty", this.value) ||
+            // formStrategy.validate("isNumber", this.value) ||
+            formStrategy.validate("isEmail", this.value) ||
+            "通过";
+          console.log(result);
+        };
+      };
+    </script>
+  </head>
+  <body>
+    <input type="text" />
+  </body>
+</html>

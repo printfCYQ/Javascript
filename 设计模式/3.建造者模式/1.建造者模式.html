@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      var data = [
+        { name: "zhang san", age: 23, work: "engineer" },
+        { name: "li si", age: 33, work: "teacher" },
+        { name: "wang wu", age: 43, work: "unknown" },
+      ];
+
+      function Candidate(param) {
+        var _candidate = {};
+
+        _candidate.name = param.name;
+        _candidate.age = param.age;
+
+        _candidate.firstName = _candidate.name.split(" ")[0];
+        _candidate.secondName = _candidate.name.split(" ")[1];
+
+        _candidate.work = {};
+
+        switch (param.work) {
+          case "engineer":
+            _candidate.work.name = "工程师";
+            _candidate.work.description = "编程";
+            break;
+          case "teacher":
+            _candidate.work.name = "老师";
+            _candidate.work.description = "分享";
+            break;
+          default:
+            _candidate.work.name = param.work;
+            _candidate.work.description = "未知";
+        }
+
+        _candidate.work.changeWork = function (work) {
+          this.name = work;
+        };
+
+        _candidate.work.changeDes = function (des) {
+          this.description = des;
+        };
+
+        return _candidate;
+      }
+
+      var candidateArr = [];
+
+      for (var i = 0; i < data.length; i++) {
+        candidateArr[i] = Candidate(data[i]);
+      }
+
+      console.log(candidateArr);
+      // 0: {name: "zhang san", age: 23, firstName: "zhang", secondName: "san", work: {…}}
+      // 1: {name: "li si", age: 33, firstName: "li", secondName: "si", work: {…}}
+      // 2: {name: "wang wu", age: 43, firstName: "wang", secondName: "wu", work: {…}}
+
+      candidateArr[0].work.changeWork("bian hua");
+      console.log(candidateArr[0].work); //{name: "bian hua", description: "编程", changeWork: ƒ, changeDsc: ƒ}
+    </script>
+  </head>
+  <body></body>
+</html>

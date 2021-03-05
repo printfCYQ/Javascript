@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      // 一般写法
+      //   window.onload = function () {
+      //     var aLis = document.getElementsByTagName("li");
+      //     for (var i = 0; i < aLis.length; i++) {
+      //       (function (i) {
+      //         aLis[i].onclick = function () {
+      //           console.log(i);
+      //         };
+      //       })(i);
+      //     }
+      //   };
+      /*
+        1.需要每个li绑定不同的事件，会造成性能损失和内存占用
+        2.新增的li不会重新绑定事件
+      */
+
+      //   -----------------------------------
+      window.onload = function () {
+        var oUl = document.querySelector("ul");
+        oUl.onclick = function (e) {
+          var e = e || window.event;
+          var target = e.target || e.srcElement;
+
+          if (target.nodeName.toLowerCase() === "li") {
+            console.log(target.innerHTML);
+          }
+        };
+
+        var oLi = document.createElement("li");
+        oLi.innerHTML = "eee";
+        oUl.appendChild(oLi);
+      };
+    </script>
+  </head>
+  <body>
+    <ul id="ul1">
+      <li>aaa</li>
+      <li>bbb</li>
+      <li>ccc</li>
+      <li>ddd</li>
+    </ul>
+  </body>
+</html>

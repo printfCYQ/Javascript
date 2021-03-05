@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      window.onload = function () {
+        // 寄生组合式继承
+        function inheritPrototype(subClass, superCalss) {
+          function F() {}
+          F.prototype = superCalss.prototype;
+          subClass.prototype = new F();
+          subClass.prototype.constructor = subClass;
+        }
+
+        //基类
+        function Container() {
+          this.children = [];
+          this.element = null;
+        }
+
+        Container.prototype = {
+          init: function () {
+            throw new Error("请重写init方法");
+          },
+          add: function (child) {
+            this.children.push(child);
+            this.element.appendChild(child.element);
+            return this;
+          },
+        };
+
+        // 基于容器基类创建表单容器
+        function CreateForm(id, method, action, parent) {
+          Container.call(this);
+          this.id = id || "";
+          this.method = method || "get";
+          this.action = action || "";
+          this.parent = parent;
+          this.init();
+        }
+
+        inheritPrototype(CreateForm, Container);
+
+        CreateForm.prototype.init = function () {
+          this.element = document.createElement("form");
+          this.element.id = this.id;
+          this.element.method = this.method;
+          this.element.action = this.action;
+        };
+
+        CreateForm.prototype.show = function () {
+          this.parent.appendChild(this.element);
+        };
+
+        // 行容器组件
+        function CreateLine(className) {
+          Container.call(this);
+          this.className =
+            className === undefined ? "form-line" : "form-line " + className;
+          this.init();
+        }
+
+        inheritPrototype(CreateLine, Container);
+
+        CreateLine.prototype.init = function () {
+          this.element = document.createElement("div");
+          this.element.className = this.className;
+        };
+
+        // label组件
+        function CreateLabel(text, forName) {
+          this.text = text || "";
+          this.forName = forName || "";
+          this.init();
+        }
+
+        CreateLabel.prototype.init = function () {
+          this.element = document.createElement("label");
+          this.element.setAttribute("for", this.forName);
+          this.element.innerHTML = this.text;
+        };
+
+        // input组件
+        function CreateInput(type, id, name, defaultValue) {
+          this.type = type || "";
+          this.id = id || "";
+          this.name = name || "";
+          this.defaultValue = defaultValue || "";
+          this.init();
+        }
+
+        CreateInput.prototype.init = function () {
+          this.element = document.createElement("input");
+          this.element.type = this.type;
+          this.element.id = this.id;
+          this.element.name = this.name;
+          this.element.defaultValue = this.defaultValue;
+        };
+
+        var form = new CreateForm(
+          "owner-form",
+          "GET",
+          "/aaa.html",
+          document.body
+        );
+
+        var userLine = new CreateLine()
+          .add(new CreateLabel("用户名", "user", ""))
+          .add(new CreateInput("text", "user", "user"));
+
+        var pwdLine = new CreateLine()
+          .add(new CreateLabel("密码", "pwd", ""))
+          .add(new CreateInput("password", "pwd", "pwd"));
+
+        var submitLine = new CreateLine().add(
+          new CreateInput("submit", "", "", "登录")
+        );
+
+        form.add(userLine).add(pwdLine).add(submitLine).show();
+      };
+    </script>
+  </head>
+  <body>
+    <!-- <form action="xxx" method="GET">
+      <div class="form-line">
+        <label for="user">用户名</label>
+        <input type="text" id="user" name="user" />
+      </div>
+      <div class="form-line">
+        <label for="pwd">密码</label>
+        <input type="password" id="pwd" name="pwd" />
+      </div>
+      <div class="form-line">
+        <input type="submit" value="登录" />
+      </div>
+    </form> -->
+  </body>
+</html>

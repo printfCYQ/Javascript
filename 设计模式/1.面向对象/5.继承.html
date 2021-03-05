@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      // 继承
+      /*
+        1. 类式继承
+        2. 构造函数继承
+        3. 组合式继承
+        4. 寄生组合式继承
+      */
+
+      /*
+        new 过程
+        1. 创建一个空对象
+        2. 将构造函数的prototype属性赋值给新对象的__proto__属性
+        3. 将构造函数的this指向新对象
+        4. 执行构造函数的代码
+        5. 将对象返回
+      */
+
+      //在声明函数时，会自动创建一个prototype属性，我们叫它原型，一般用来存放实例的公用方法
+
+      function CreateCat(name) {
+        this.name = name;
+      }
+
+      console.log(CreateCat.prototype);
+
+      CreateCat.prototype.eat = function (something) {
+        console.log(this.name + " eat " + something);
+      };
+
+      var catA = new CreateCat("xiaoA");
+      catA.eat("fish"); // xiaoA eat fish
+
+      console.log(catA);
+      //   cat = {
+      //     __proto__: CreateCat.prototype,
+      //     name: "xiaoA",
+      //   };
+
+      //在js中，访问对象属性时，如果对象下没有这个属性，向下一层__proto__里面找，直到找到或者没有下一层__proto__为止
+
+      //   类式继承__________________________________________________________________________________________
+      function A(name) {
+        this.name = name;
+        this.list = [1, 2, 3];
+      }
+      A.prototype.getName = function () {
+        console.log(this.name);
+      };
+      function SubA(name) {
+        this.subName = "sub" + this.name;
+      }
+      SubA.prototype = new A();
+
+      var sa1 = new SubA("sa1");
+      console.log(sa1.name, sa1.list); //undefined [1,2,3]
+
+      /*
+       SubA.prototype = new A() ==> {
+            name:undefined,
+            list:[1,2,3],
+            __proto__:{
+                getName:fn,
+                constructor ......
+            }
+        }
+
+        sa1 = new SubA("sa1") ==> {
+            subName:'sub sa1',
+            __proto__:{
+                name:undefined,
+                list:[1,2,3],
+                __proto__:{
+                    getName:fn,
+                    constructor ......
+                } 
+            }
+        }
+      */
+
+      /*
+        类式继承问题
+        1. 这种方法不支持父构造函数带参数
+        2. 父构造函数里的方法和属性都会变成共有属性
+      */
+
+      //   构造函数继承__________________________________________________________________________________________
+
+      function B(name) {
+        this.name = name;
+        this.list = [1, 2, 3];
+      }
+      B.prototype.getName = function () {
+        console.log(this.name);
+      };
+      function SubB(name) {
+        B.call(this, name);
+        this.subName = "sub" + this.name;
+      }
+
+      var sa2 = new SubB("xiaoB");
+
+      console.log(sa2.name, sa2.subName); //xiaoB subxiaoB
+      //   sa2.getName(); //sa2.getName is not a function
+
+      /*
+        sa2 = new Sub('xiaoB') ==>{
+            __proto__: {constructor},
+            name:'xiaoB',
+            list:[1,2,3],
+            subName:'sub xiaoB'
+        }
+      */
+
+      /*
+        构造函数问题
+        1. 不能继承父构造函数的原型方法
+      */
+
+      //   组合式继承__________________________________________________________________________________________
+
+      function C(name) {
+        this.name = name;
+        this.list = [1, 2, 3];
+      }
+      C.prototype.getName = function () {
+        console.log(this.name);
+      };
+      function SubC(name) {
+        C.call(this, name);
+        this.subName = "sub" + this.name;
+      }
+
+      SubC.prototype = new C();
+
+      var sa3 = new SubC("xiaoC");
+
+      console.log(sa3.name, sa3.subName); //xiaoC subxiaoC
+      sa3.getName(); //xiaoC
+
+      /*
+        SubC.prototype = new C() ==> {
+            name:undefined,
+            list:[1,2,3],
+            __proto__:{
+                getName:fn
+            }
+        }
+
+        sa3 = new SubC("sa3") ==> {
+            name:'xiaoC',
+            list:[1,2,3],
+            subName:'sub xiaoC'
+            __proto__: {
+                name:undefined,
+                list:[1,2,3],
+                __proto__:{
+                    getName:fn
+                } 
+            },
+        }
+      */
+
+      /*
+        组合式继承问题
+        1. __proto__里面的属性没用
+        2. 执行了两次父构造函数
+      */
+
+      //   寄生组合式继承__________________________________________________________________________________________
+      function D(name) {
+        this.name = name;
+        this.list = [1, 2, 3];
+      }
+      D.prototype.getName = function () {
+        console.log(this.name);
+      };
+      function SubD(name) {
+        D.call(this, name);
+        this.subName = "sub" + this.name;
+      }
+
+      //   SubD.prototype = new D();
+
+      function inheritPrototype(subClass, superCalss) {
+        function F() {}
+        F.prototype = superCalss.prototype;
+        subClass.prototype = new F();
+        // subClass.prototype.constructor = subClass
+      }
+
+      inheritPrototype(SubD, D);
+
+      var sa4 = new SubD("xiaoD");
+
+      console.log(sa4.name, sa4.subName); //xiaoD subxiaoD
+      sa4.getName(); //xiaoD
+    </script>
+  </head>
+  <body></body>
+</html>

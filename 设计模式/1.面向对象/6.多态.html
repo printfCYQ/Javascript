@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      // 多态：表示不同对象调用相同方法会产生不同结果
+
+      function Base() {
+        Base.prototype.inherit = function () {
+          this.init();
+        };
+      }
+
+      function SubA() {
+        this.init = function () {
+          console.log("subA init");
+        };
+      }
+
+      function SubB() {
+        this.init = function () {
+          console.log("subB init");
+        };
+      }
+
+      SubA.prototype = new Base();
+      SubB.prototype = new Base();
+
+      var subA = new SubA();
+      var subB = new SubB();
+
+      subA.inherit(); //subA init
+      subB.inherit(); //subB init
+    </script>
+  </head>
+  <body></body>
+</html>

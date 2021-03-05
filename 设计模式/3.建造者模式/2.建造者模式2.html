@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      var data = [
+        { name: "zhang san", age: 23, work: "engineer" },
+        { name: "li si", age: 33, work: "teacher" },
+        { name: "wang wu", age: 43, work: "unknown" },
+      ];
+
+      function Candidate(param) {
+        var _candidate = new Person(param);
+
+        _candidate.name = new CreateName(param.name);
+        _candidate.work = new CreateWork(param.work);
+
+        return _candidate;
+      }
+
+      function Person(param) {
+        this.name = param.name;
+        this.age = param.age;
+      }
+
+      function CreateName(name) {
+        this.wholeName = name;
+        this.firatName = name.split(" ")[0];
+        this.secondName = name.split(" ")[1];
+      }
+
+      function CreateWork(work) {
+        switch (work) {
+          case "engineer":
+            this.name = "工程师";
+            this.description = "编程";
+            break;
+          case "teacher":
+            this.name = "老师";
+            this.description = "分享";
+            break;
+          default:
+            this.name = work;
+            this.description = "未知";
+        }
+      }
+
+      CreateWork.prototype.changeWork = function (work) {
+        this.name = work;
+      };
+
+      CreateWork.prototype.changeDes = function (des) {
+        this.description = des;
+      };
+
+      var candidateArr = [];
+
+      for (var i = 0; i < data.length; i++) {
+        candidateArr[i] = Candidate(data[i]);
+      }
+
+      console.log(candidateArr);
+      // 0: Person
+      // age: 23
+      // name: CreateName {wholeName: "zhang san", firatName: "zhang", secondName: "san"}
+      // work: CreateWork {name: "工程师", description: "编程"}
+      // __proto__: Object
+      // 1: Person
+      // age: 33
+      // name: CreateName {wholeName: "li si", firatName: "li", secondName: "si"}
+      // work: CreateWork {name: "老师", description: "分享"}
+      // __proto__: Object
+      // 2: Person
+      // age: 43
+      // name: CreateName {wholeName: "wang wu", firatName: "wang", secondName: "wu"}
+      // work: CreateWork {name: "unknown", description: "未知"}
+      // __proto__: Object
+      // length: 3
+
+      candidateArr[0].work.changeWork("bian hua");
+      console.log(candidateArr[0].work); //CreateWork {name: "bian hua", description: "编程"}
+    </script>
+  </head>
+  <body></body>
+</html>

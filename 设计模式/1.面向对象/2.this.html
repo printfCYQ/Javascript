@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      //在函数执行的时候会在函数内部创建两个变量，arguments,this
+      //arguments存储着实参的一个类数组对象
+      //this 指向函数的执行上下文（谁调用这个函数，this就指向谁）
+
+      //   arguments------------------------------------------
+      function aaa(a, b) {
+        console.log(arguments); //{0:1,1:2,2:3,3:4,length:4}
+      }
+      aaa(1, 2, 3, 4);
+
+      //   this-----------------------------------------------
+      function bbb() {
+        console.log(this);
+      }
+      var objA = {
+        b: bbb,
+        c: {
+          d: bbb,
+        },
+      };
+      bbb(); //window
+      objA.b(); //objA
+      objA.c.d(); //objA.c
+    </script>
+  </head>
+  <body></body>
+</html>
