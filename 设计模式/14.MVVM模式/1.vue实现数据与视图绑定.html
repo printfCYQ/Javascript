@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      /*
+            如何实现数据与视图绑定
+            1.需要知道哪个数据改变了，一般我们可以使用数据访问对象的方法，在vue中使用的是es5的对象访问属性get/set
+            2.修改的数据与哪个视图有关联，观察者模式
+            3.修改视图
+        */
+
+      //   var test = {
+      //     _a: undefined,
+      //     get a() {
+      //       //return "111";
+      //       return this._a;
+      //     },
+      //     set a(newVal) {
+      //       this._a = newVal;
+      //     },
+      //   };
+
+      //   console.log(test.a);
+      //   test.a = "abc";
+      //   console.log(test.a);
+
+      //   ----------------------------------------------
+
+      //   var test2 = (function () {
+      //     var _a = undefined;
+      //     var test = {
+      //       get a() {
+      //         return this._a;
+      //       },
+      //       set a(newVal) {
+      //         _a = newVal;
+      //       },
+      //     };
+      //     return test;
+      //   })();
+      //   console.log(test2);
+
+      //   ----------------------------------------------------
+
+      //   var test3 = { _a: 111 };
+
+      //   Object.defineProperty(test3, "a", {
+      //     get: function () {
+      //       return this._a;
+      //     },
+      //     set: function (newVal) {
+      //       this._a = newVal;
+      //     },
+      //   });
+      //   console.log(test3.a);
+      //   test3.a = "abc";
+      //   console.log(test3.a);
+
+      //   -----------------------------------------------
+
+      //   var data = { a: 1 };
+      //   var dep = []; //消息中心
+      //   var target = null; //观察者
+
+      //   Object.defineProperty(data, "a", {
+      //     get: function () {
+      //       dep.push(target);
+      //     },
+      //     set: function (newVal) {
+      //       for (var i = 0; i < dep.length; i++) {
+      //         dep[i]();
+      //       }
+      //     },
+      //   });
+
+      //   function watch(exp, fn) {
+      //     target = fn;
+      //     data[exp];
+      //   }
+
+      //   watch("a", function () {
+      //     console.log("我是第一个监听");
+      //   });
+      //   watch("a", function () {
+      //     console.log("我是第二个监听");
+      //   });
+      //   data.a = 2;
+
+      /*
+        问题：
+        1.访问不到a,并且需要另一个值去暂存a的值
+        2.只做了一个数据的收集
+        3.再次访问时，会重复收集依赖
+      */
+
+      //   --------------------------------------------------
+
+      var data = { a: 1, b: 2 };
+
+      for (var key in data) {
+        (function (key) {
+          var dep = [];
+          var value = data.key;
+          Object.defineProperty(data, key, {
+            get: function () {
+              for (var i = 0; i < dep.length; i++) {
+                if (dep[i] === target) {
+                  return value;
+                }
+              }
+              dep.push(target);
+              return value;
+            },
+            set: function (newVal) {
+              if (newVal !== value) {
+                value = newVal;
+                for (var i = 0; i < dep.length; i++) {
+                  dep[i]();
+                }
+              }
+            },
+          });
+        })(key);
+      }
+
+      var dep = []; //消息中心
+      var target = null; //观察者
+
+      //   Object.defineProperty(data, "a", {
+      //     get: function () {
+      //       dep.push(target);
+      //     },
+      //     set: function (newVal) {
+      //       for (var i = 0; i < dep.length; i++) {
+      //         dep[i]();
+      //       }
+      //     },
+      //   });
+
+      function render() {
+        document.write(
+          "<div><h3>文案</h3><p>a的值：" +
+            data.a +
+            "</p><p>b的值：" +
+            data.b +
+            "</p></div>"
+        );
+      }
+
+      function watch(exp, fn) {
+        target = fn;
+        if (typeof exp === "function") {
+          exp();
+          return;
+        } else {
+          data[exp];
+        }
+      }
+
+      //   watch("a", function () {
+      //     console.log("我是第一个监听a");
+      //   });
+      //   watch("a", function () {
+      //     console.log("我是第二个监听a");
+      //   });
+      //   watch("b", function () {
+      //     console.log("我是第一个监听b");
+      //   });
+
+      //   watch("a", render);
+      //   watch("b", render);
+      watch(render, render);
+
+      data.a = 2;
+      data.b = 3;
+    </script>
+  </head>
+  <body></body>
+</html>

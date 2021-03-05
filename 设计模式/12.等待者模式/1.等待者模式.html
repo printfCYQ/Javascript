@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      /*
+            waiter.when().done().fail()
+        */
+
+      function Waiter() {
+        var dfd = []; //存放异步事件
+        var doneArr = []; //存放成功回调
+        var failArr = []; //存放失败回调
+
+        this.when = function () {
+          console.log(arguments);
+          // 获取arguments-----是一个类数组
+          dfd = Array.prototype.slice.call(arguments);
+          for (var i = dfd.length - 1; i >= 0; i--) {
+            var d = dfd[i];
+            if (!d || d.rejected || d.resolved || d instanceof Defer) {
+              dfd.splice(i, 1);
+            }
+          }
+          return this;
+        };
+
+        this.done = function () {
+          var args = Array.prototype.slice.call(arguments);
+          doneArr = doneArr.concat(args);
+          return this;
+        };
+
+        this.fail = function () {
+          var args = Array.prototype.slice.call(arguments);
+          failArr = failArr.concat(args);
+          return this;
+        };
+
+        this.Deferred = function () {
+          return new Defer();
+        };
+
+        var Defer = function () {
+          this.resolved = false;
+          this.rejected = false;
+        };
+
+        Defer.prototype = {
+          resolve: function () {
+            this.resolved = true;
+            for (var i = 0; i < dfd.length; i++) {
+              if (!dfd[i].resolved) {
+                return;
+              }
+            }
+            // 如果全部完成，就不会return 出去
+            // 执行成功的回调函数
+            _exec(doneArr);
+          },
+          reject: function () {
+            this.rejected = true;
+            // 执行失败的回调函数
+            _exec(failArr);
+          },
+        };
+
+        function _exec(arr) {
+          for (var i = 0; i < arr.length; i++) {
+            arr[i] && arr[i]();
+          }
+        }
+      }
+
+      var waiter = new Waiter();
+
+      var async1 = function () {
+        var dfd = waiter.Deferred();
+        setTimeout(() => {
+          console.log("async1");
+          dfd.resolve();
+        }, 1000);
+        return dfd;
+      };
+
+      var async2 = function () {
+        var dfd = waiter.Deferred();
+        setTimeout(() => {
+          console.log("async2");
+          dfd.resolve();
+        }, 2000);
+        return dfd;
+      };
+
+      waiter
+        .when(async1(), async2())
+        .done(function () {
+          console.log("success");
+        })
+        .fail(function () {
+          console.log("fail");
+        });
+    </script>
+  </head>
+  <body></body>
+</html>

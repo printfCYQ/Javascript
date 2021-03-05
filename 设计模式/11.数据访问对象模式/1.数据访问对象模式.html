@@ -1,14 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script>
+      /*
+            {
+                nameSpace|key:expire|value
+            }
+        */
+
+      var DataVisitor = function (nameSpace, splitSign) {
+        this.nameSpace = nameSpace;
+        this.splitSign = splitSign || "|";
+      };
+
+      DataVisitor.prototype = {
+        status: {
+          SUCCESS: 0,
+          FAILURE: 1,
+          OVERFLOWER: 2,
+          TIMEOUT: 3,
+        },
+
+        getKey: function (key) {
+          return this.nameSpace + this.splitSign + key;
+        },
+        set: function (key, value, cbFn, expireTime) {
+          var status = this.status.SUCCESS;
+          key = this.getKey(key);
+          expireTime =
+            typeof expireTime === "number"
+              ? expireTime + new Date().getTime()
+              : -1;
+
+          try {
+            window.localStorage.setItem(
+              key,
+              expireTime + this.splitSign + value
+            );
+          } catch (e) {
+            status = this.status.OVERFLOWER;
+          }
+
+          cbFn && cbFn.call(this, status, key, value);
+          return value;
+        },
+        get: function (key, cbFn) {
+          key = this.getKey(key);
+          status = this.status.SUCCESS;
+          var value = window.localStorage.getItem(key);
+
+          if (value) {
+            var index = value.indexOf(this.splitSign),
+              time = value.slice(0, index);
+
+            if (time > new Date().getTime() || time == -1) {
+              value = value.slice(index + this.splitSign.length);
+            } else {
+              value = null;
+              status = this.status.TIMEOUT;
+              window.localStorage.getItem(key);
+            }
+          } else {
+            status = this.status.FAILURE;
+          }
+
+          cbFn && cbFn.call(this, status, key, value);
+          return value;
+        },
+        remove: function (key, cbFn) {
+          var status = this.status.FAILURE;
+          key = this.getKey(key);
+
+          value = window.localStorage.getItem(key);
+
+          if (value) {
+            value.slice(value.indexOf(this.splitSign) + this.splitSign.length);
+            window.localStorage.removeItem(key);
+            status = this.status.SUCCESS;
+          }
+
+          cbFn && cbFn.call(this, status, key, value);
+
+          //   window.localStorage.removeItem(key);
+        },
+      };
+
+      var learnInPro = new DataVisitor("learnInPro");
+
+      //   learnInPro.set("aaa", "123", function (status, key, value) {
+      //     console.log(status, key, value);
+      //   });
+
+      //   learnInPro.get("aaa", function (status, key, value) {
+      //     console.log(status, key, value);
+      //   });
+
+      //   learnInPro.remove("aaa", function (status, key, value) {
+      //     console.log(status, key, value);
+      //   });
+
+      learnInPro.set(
+        "aaa",
+        "123",
+        function (status, key, value) {
+          console.log(status, key, value); //0 "learnInPro|aaa" "123"
+        },
+        1000 * 2
+      );
+
+      learnInPro.get("aaa", function (status, key, value) {
+        console.log(status, key, value); //0 learnInPro|aaa 123
+      });
+
+      setTimeout(() => {
+        learnInPro.get("aaa", function (status, key, value) {
+          console.log(status, key, value); //3 learnInPro|aaa null
+        });
+      }, 1000 * 3);
     </script>
-</head>
-<body>
-    
-</body>
+  </head>
+  <body></body>
 </html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      var MVC = {};
+
+      MVC.model = (function () {
+        var data = {
+          sidebar: [
+            { title: "sidebar1", herf: "./a.html" },
+            { title: "sidebar2", herf: "./b.html" },
+            { title: "sidebar3", herf: "./c.html" },
+          ],
+        };
+        return {
+          getData: function (key) {
+            return data[key];
+          },
+          setData: function (key, value) {
+            data[key] = value;
+            MVC.view("createSidebar");
+          },
+        };
+      })();
+
+      MVC.view = (function () {
+        var m = MVC.model;
+        var view = {
+          createSidebar: function () {
+            var data = m.getData("sidebar");
+            var html = "";
+            html += '<div id="sidebar">';
+            for (var i = 0; i < data.length; i++) {
+              html +=
+                '<div class="sidebar-item"><a href="' +
+                data[i].herf +
+                '">' +
+                data[i].title +
+                "</a></div>";
+            }
+            html += "</div>";
+            document.body.innerHTML = html;
+          },
+        };
+
+        return function (v) {
+          view[v]();
+        };
+      })();
+
+      MVC.ctrl = (function () {
+        var m = MVC.model;
+        var v = MVC.view;
+        var c = {
+          initSideBar: function () {
+            v("createSidebar");
+          },
+          updateSidebar: function () {
+            m.setData("sidebar", [{ title: "sidebar4", herf: "./d.html" }]);
+          },
+        };
+        return c;
+      })();
+      window.onload = function () {
+        MVC.ctrl.initSideBar();
+
+        setTimeout(() => {
+          MVC.ctrl.updateSidebar();
+        }, 3000);
+      };
+    </script>
+  </head>
+  <body></body>
+</html>
