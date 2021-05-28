@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button>下载图片</button>
+    <script>
+      const fielObj = {
+        name: "测试图片",
+        url: "https://avatars.githubusercontent.com/u/44568105?v=4",
+      };
+      function download(file) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", file.url);
+        xhr.responseType = "blob";
+        xhr.send();
+        xhr.onload = function () {
+          const fileBlob = xhr.response;
+          const fileURl = URL.createObjectURL(fileBlob);
+          const eleA = document.createElement("a");
+          eleA.href = fileURl;
+          eleA.download = file.name;
+          eleA.click();
+        };
+      }
+
+      document.querySelector("button").onclick = function () {
+        download(fielObj);
+      };
+    </script>
+  </body>
+</html>
